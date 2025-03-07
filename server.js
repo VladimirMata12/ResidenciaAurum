@@ -14,22 +14,39 @@ app.use((req, res, next) => {
   next();
 });
 
+// Ruta específica para "Reservación"
+app.get("/reservacion", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "public", "reservacion.html"));
+});
+
+// Ruta específica para "Acerca de Nosotros"
+app.get("/about", (req, res) => {
+  res.sendFile(path.resolve(__dirname, "public", "about.html"));
+});
+
+// Servir el archivo 'index.html' por defecto para cualquier otra ruta
 app.get("*", (req, res) => {
   res.sendFile(path.resolve(__dirname, "public", "index.html"));
 });
+
 // Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor funcionando en http://localhost:${port}`);
 });
 
-//Manejo de errores
-
+// Manejo de errores
 app.use((req, res, next) => {
+  res.status(404);
+  // responder con html
   if (req.accepts("html")) {
-    res.status(404).send("Page Not Found");
-  } else if (req.accepts("json")) {
-    res.status(404).send({ error: "Not Found" });
-  } else {
-    res.status(404).send("Not Found");
+    res.send("Page Not Found");
+    return;
   }
+  // responder con json
+  if (req.accepts("json")) {
+    res.send({ error: "Not Found" });
+    return;
+  }
+  // responder con texto plano
+  res.send("Not Found");
 });
